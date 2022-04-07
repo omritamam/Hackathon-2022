@@ -1,6 +1,9 @@
 # Hackathon-2022
 
 Website:
+Adress to login- login.wordpress.com
+
 Address- up-grade.online
-Id- idoazulai@mail.huji.ac.il
+Email- ido.azulai@mail.huji.ac.il
+Id- idoazulai
 Pass- TipoIsBetter
