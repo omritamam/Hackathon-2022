@@ -2,5 +2,7 @@
 
 Website:
 Address- upgrade2023.wordpress.com
-Id- idoazulai@mail.huji.ac.il
+Adress to login- login.wordpress.com
+Email- ido.azulai@mail.huji.ac.il
+Id- idoazulai
 Pass- TipoIsBetter
