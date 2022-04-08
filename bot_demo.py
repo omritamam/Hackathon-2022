@@ -2,7 +2,7 @@ from telegram import *
 from telegram.ext import *
 from requests import *
 
-updater = Updater(token="5297251485:AAFTtEAqdiHSNf_G3l5iRo2v2vOK6XnG0pY")
+updater = Updater(token='5235332220:AAGyi_ydNsbTm71TVvVF5IH03vjP19TOCOQ')
 dispatcher = updater.dispatcher
 
 randomPeopleText = "Random Person"
@@ -21,6 +21,8 @@ def startCommand(update: Update, context: CallbackContext):
     buttons = [[KeyboardButton(randomImageText)], [KeyboardButton(randomPeopleText)]]
     context.bot.send_message(chat_id=update.effective_chat.id, text="Welcome to my bot!",
                              reply_markup=ReplyKeyboardMarkup(buttons))
+    context.bot.sendDocument(chat_id=update.effective_chat.id,
+                             document=open('C:\\Users\\otamam\\Downloads\\50360.pdf', 'rb'))
 
 
 def messageHandler(update: Update, context: CallbackContext):
