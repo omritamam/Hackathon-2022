@@ -1,15 +1,16 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from upload_file import full_upload
 
-omri_log = {}
+log = {}
 
-course_button0 = InlineKeyboardButton(text="infi 1", callback_data="infi 1")
-course_button1 = InlineKeyboardButton(text="linear 1", callback_data="linear 1")
-course_button2 = InlineKeyboardButton(text="discrete", callback_data="discrete")
-course_button3 = InlineKeyboardButton(text="intro", callback_data="intro")
+course_button0 = InlineKeyboardButton(text="Infi 1", callback_data="Infi 1")
+course_button1 = InlineKeyboardButton(text="Linear 1", callback_data="Linear 1")
+course_button2 = InlineKeyboardButton(text="Discrete", callback_data="Discrete")
+course_button3 = InlineKeyboardButton(text="Intro to CS", callback_data="Intro to CS")
 
-course_button4 = InlineKeyboardButton(text="infi 2", callback_data="infi 2")
-course_button5 = InlineKeyboardButton(text="linear 2", callback_data="linear 2")
+course_button4 = InlineKeyboardButton(text="Infi 2", callback_data="Infi 2")
+course_button5 = InlineKeyboardButton(text="Linear 2", callback_data="Linear 2")
 course_button6 = InlineKeyboardButton(text="DAST", callback_data="DAST")
 course_button7 = InlineKeyboardButton(text="C/C++", callback_data="C/C++")
 
@@ -44,20 +45,25 @@ dp = Dispatcher(bot)
 @dp.message_handler(content_types=['txt', 'text'])
 async def get_file_details(message):
     if str(message.text).isnumeric():
-        omri_log["course"] = message.text
+        log["course"] = message.text
         await message.reply("Which year???", reply_markup=DATES)
     else:
-        omri_log["comments"] = message.text
-        await message.reply("thank you!!")
+        log["comments"] = message.text
+        await bot.send_message(
+            text="Uploading.... Wait for Confirmation!",
+            chat_id=message.chat.id)
+        full_upload(log)
+        await message.reply("Thank you!! 😁😁")
 
 
 @dp.message_handler(content_types=['photo', 'video', 'audio', 'document'])
 async def file_sent(message):
-    await bot.send_message(text="Navigate to your course course name or type its number",
+    await bot.send_message(text="Hey!\n Welcome to Up-Grade bot!🦾🦾\nNavigate to your course course name or type its "
+                                "number 🚀🚀",
                            reply_markup=YEARS,
                            chat_id=message.chat.id)
     filename = "downloaded.pdf"
-    omri_log["path"] = filename
+    log["path"] = filename
 
     with open(filename, 'wb') as f:
         x1 = await bot.get_file(file_id=message.document.file_id)
@@ -72,35 +78,37 @@ async def year_handler(call: types.CallbackQuery):
         next_keyboard_map = CS_YEAR2
     else:
         next_keyboard_map = CS_YEAR1
-    await bot.send_message(text="Choose course name or type its number",
+    await bot.send_message(text="Choose course name\n🇮🇱🇮🇱",
                            reply_markup=next_keyboard_map,
                            chat_id=call.message.chat.id)
 
 
 @dp.callback_query_handler(text=["2017", "2018", "2019", "2020", "2021", "2022"])
 async def date_handler(call: types.CallbackQuery):
-    omri_log["year"] = call.data
-    await bot.send_message(chat_id=call.message.chat.id, text="Which Moed?", reply_markup=MOEDS)
+    log["year"] = call.data
+    await bot.send_message(chat_id=call.message.chat.id, text="🥁🥁🥁🥁🥁\nWhich Moed?\n🥁🥁🥁🥁🥁", reply_markup=MOEDS)
 
 
-@dp.callback_query_handler(text=["intro", "discrete", "linear 1", "infi 1"])
+@dp.callback_query_handler(text=["Intro to CS", "Discrete", "Linear 1", "Infi 1",
+                                 "DAST", "C/C++", "Linear 2", "Infi 2"])
 async def year_handler(call: types.CallbackQuery):
-    if call.data == "intro":
-        omri_log["course"] = '67101'
-    if call.data == "discrete":
-        omri_log["course"] = '80181'
-    if call.data == "linear 1":
-        omri_log["course"] = '80135'
-    if call.data == "infi 1":
-        omri_log["course"] = '80133'
-
-    await bot.send_message(chat_id=call.message.chat.id, text="Which year?", reply_markup=DATES)
+    if call.data == "Intro to CS":
+        log["course"] = '67101'
+    elif call.data == "Discrete":
+        log["course"] = '80181'
+    elif call.data == "Linear 1":
+        log["course"] = '80134'
+    elif call.data == "Infi 1":
+        log["course"] = '80133'
+    else:
+        log["course"] = '80133'
+    await bot.send_message(chat_id=call.message.chat.id, text="Which year?\n📅📅", reply_markup=DATES)
 
 
 @dp.callback_query_handler(text=["Moed A", "Moed B"])
 async def moed_picker(call: types.CallbackQuery):
-    omri_log["moed"] = call.data
-    await bot.send_message(call.message.chat.id, 'enter notes answered')
+    log["moed"] = call.data
+    await bot.send_message(call.message.chat.id, 'Enter notes if there are any 🧧✉️🖇️🗂️')
 
 
 executor.start_polling(dp)
