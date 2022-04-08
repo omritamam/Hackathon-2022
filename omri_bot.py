@@ -1,4 +1,3 @@
-import requests
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -40,29 +39,10 @@ MOEDS = InlineKeyboardMarkup().add(moedA, moedB)
 TOKEN = "5297251485:AAFTtEAqdiHSNf_G3l5iRo2v2vOK6XnG0pY"
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
-executor.start_polling(dp)
-
-
-def download_file(url, req, filename=''):
-    print("download file")
-    try:
-        if not filename:
-            pass
-        filename = req.url[downloadUrl.rfind('/')+1:]
-        with requests.get(url) as req:
-            with open(filename, 'wb') as f:
-                for chunk in req.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-            return filename
-    except Exception as e:
-        print(e)
-        return None
 
 
 @dp.message_handler(content_types=['txt', 'text'])
 async def get_file_details(message):
-    user_id = message.from_user.id
     if str(message.text).isnumeric():
         omri_log["course"] = message.text
         await message.reply("Which year???", reply_markup=DATES)
@@ -71,23 +51,17 @@ async def get_file_details(message):
         await message.reply("thank you!!")
 
 
-
-
 @dp.message_handler(content_types=['photo', 'video', 'audio', 'document'])
 async def file_sent(message):
-    await message.reply("Navigate to your course course name or type its number", reply_markup=YEARS)
-    url = bot.get_file_url(message.document.file_id)
-    req = requests.get(url)
-    # bot.get_file(message.document).download()
-    # message.get_file(message.document).download()
-    # writing to a custom file
-    with open("test.pdf", 'wb') as f:
-        bot.get_file(message.document).download(out=f)
-
+    await bot.send_message(text="Navigate to your course course name or type its number",
+                           reply_markup=YEARS,
+                           chat_id=message.chat.id)
     filename = "downloaded.pdf"
     omri_log["path"] = filename
-    download_file(url, req, filename)
 
+    with open(filename, 'wb') as f:
+        x1 = await bot.get_file(file_id=message.document.file_id)
+        y2 = await x1.download(f)
 
 
 @dp.callback_query_handler(text=["Year 1", "Year 2", "Year 3"])
@@ -106,7 +80,7 @@ async def year_handler(call: types.CallbackQuery):
 @dp.callback_query_handler(text=["2017", "2018", "2019", "2020", "2021", "2022"])
 async def date_handler(call: types.CallbackQuery):
     omri_log["year"] = call.data
-    await call.message.reply("Which Moed???", reply_markup=MOEDS)
+    await bot.send_message(chat_id=call.message.chat.id, text="Which Moed?", reply_markup=MOEDS)
 
 
 @dp.callback_query_handler(text=["intro", "discrete", "linear 1", "infi 1"])
@@ -120,7 +94,7 @@ async def year_handler(call: types.CallbackQuery):
     if call.data == "infi 1":
         omri_log["course"] = '80133'
 
-    await call.message.reply("Which year?", reply_markup=DATES)
+    await bot.send_message(chat_id=call.message.chat.id, text="Which year?", reply_markup=DATES)
 
 
 @dp.callback_query_handler(text=["Moed A", "Moed B"])
@@ -128,3 +102,5 @@ async def moed_picker(call: types.CallbackQuery):
     omri_log["moed"] = call.data
     await bot.send_message(call.message.chat.id, 'enter notes answered')
 
+
+executor.start_polling(dp)
